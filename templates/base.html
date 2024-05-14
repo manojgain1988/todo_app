@@ -20,6 +20,20 @@
 
     {% include "navbar.html" %}
 
+
+
+<!-- Messages -->
+{% if messages %}
+{% for message in messages %}
+  {% if message.tags == 'error' %}
+   <div class="alert alert-danger">{{message}}</div>
+  {% elif message.tags == 'success' %}
+   <div class="alert alert-success">{{message}}</div>
+  {% endif %}
+{% endfor %}
+{% endif %}
+<!-- Messages end -->
+
     <div class="container py-2">
     {% block content %} 
     {% endblock content %} 

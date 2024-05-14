@@ -1,17 +1,19 @@
 from django.shortcuts import render, redirect
 from .models import Todo
-
+from django.contrib.auth import authenticate, login as authLogin, logout as authlogout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 # Create your views here.
 
-
-def index(request):
+@login_required
+def index(request): 
     if request.method == 'POST':
         text = request.POST.get("text").strip()
         if text:
             Todo.objects.create(text=text)
         return redirect('/')
 
-    todos = Todo.objects.all()
+    todos = Todo.objects.filter(user=request.user)
     context = {
         'todos': todos
     }
@@ -29,7 +31,20 @@ def about(request):
 
 
 
+
 def login(request):
+    if request.method=='POST':
+        username=request.POST.get('username')
+        password=request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            authLogin(request, user)
+            messages.add_message(request, messages.SUCCESS, 'Successfully Your Logged in.')
+            return redirect('index')
+        else:
+            messages.add_message(request, messages.ERROR, 'Your Credential are not Valid.')
+            return redirect('login')
+        
     return render(request, 'login.html')
 
 
